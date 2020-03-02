@@ -13,14 +13,15 @@ object SparkApp extends App {
     .set("spark.cassandra.connection.host", appConfig.cassandraConfig.host)
 
   implicit val sc: SparkContext = new SparkContext(conf)
+  val appProcessorUtil = AppProcessorUtil
 
   val appProcessor =
     new AppProcessor(
       appConfig,
       sc,
-      AppProcessorUtil.readSource,
-      AppProcessorUtil.validate(AppProcessorUtil.readSource),
-      AppProcessorUtil.writeToSource
+      appProcessorUtil.readSource,
+      appProcessorUtil.validate,
+      appProcessorUtil.writeToSource
     )
 
 }

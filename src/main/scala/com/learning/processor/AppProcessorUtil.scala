@@ -7,7 +7,7 @@ import org.apache.spark.SparkContext
 object AppProcessorUtil {
 
   def readSource(
-    implicit sparkContext: SparkContext
+    sparkContext: SparkContext
   ): CassandraTableScanRDD[CassandraRow] =
     sparkContext.cassandraTable("test", "contact")
 
@@ -16,6 +16,6 @@ object AppProcessorUtil {
   )(implicit sparkContext: SparkContext): Boolean =
     data.tableName == "contact"
 
-  def writeToSource = "Hello"
+  def writeToSource(isValid: Boolean) = "Hello"
 
 }
