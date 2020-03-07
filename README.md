@@ -1,4 +1,4 @@
-# spark-scala
+# Spark with Scala
 Repository for Spark poc's with different input and output source
 
 Operating System : Ubuntu Eoan(19.10)
