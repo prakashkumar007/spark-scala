@@ -1,20 +1,15 @@
 package com.learning.processor
 
-import com.datastax.spark.connector._
-import com.datastax.spark.connector.rdd.CassandraTableScanRDD
-import com.learning.AppConfig
-import org.apache.spark.SparkContext
+import com.learning.Context
+import org.apache.spark.sql.DataFrame
 
-class AppProcessor(
-  appConfig: AppConfig,
-  sparkContext: SparkContext,
-  readInput: SparkContext => CassandraTableScanRDD[CassandraRow],
-  validate: CassandraTableScanRDD[CassandraRow] => Boolean,
-  writeToSource: Boolean => String
-) {
+class AppProcessor(readInput: () => DataFrame,
+                   validate: DataFrame => Boolean,
+                   writeToSource: Boolean => String)
+    extends Context {
 
-  implicit val sc: SparkContext = sparkContext
-
-  def process: Nothing = ???
+  def process(): Unit = {
+    validate(readInput())
+  }
 
 }
