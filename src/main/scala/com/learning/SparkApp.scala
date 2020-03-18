@@ -7,12 +7,8 @@ object SparkApp extends Context with App {
   val appProcessorUtil = AppProcessorUtil
 
   val appProcessor =
-    new AppProcessor(
-      appProcessorUtil.readSource,
-      appProcessorUtil.validate,
-      appProcessorUtil.writeToSource
-    )
+    new AppProcessor(appProcessorUtil.readSource, appProcessorUtil.validate)
 
-  appProcessor.process()
+  appProcessor.process(args(0))
 
 }

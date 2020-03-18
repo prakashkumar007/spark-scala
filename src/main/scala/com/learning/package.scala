@@ -14,13 +14,18 @@ package object learning {
                        cassandraConfig: CassandraConfig)
 
   object AppConfig {
-    val appConfig = ConfigSource.default
+    val appConfig: AppConfig = ConfigSource.default
       .load[AppConfig] match {
       case Right(conf) => conf
       case Left(failures) =>
         throw new Exception(
           s"Unable to load the configuration ${failures.toList.mkString("\n")}"
         )
+    }
+
+    object RawQueries {
+      lazy val useSchemaQuery: String = "use test"
+      lazy val maxTimeQuery: String = "Select max(created_at) from contact"
     }
 
   }

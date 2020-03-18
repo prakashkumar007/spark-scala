@@ -7,3 +7,7 @@ trait ValidationException extends Exception {
 case class TableValidationException(msg: String) extends ValidationException {
   override val message: String = msg
 }
+
+case class SchemaValidationException(msg: String) extends ValidationException {
+  override val message: String = msg
+}
