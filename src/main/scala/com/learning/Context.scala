@@ -11,8 +11,14 @@ trait Context {
     .setAppName(appConfig.sparkConfig.appName)
     .set("spark-logConf", "false")
     .set("spark.cassandra.connection.host", appConfig.cassandraConfig.host)
+    .set("spark.sql.warehouse.dir", "user/hive/warehouse")
+    .set("hive.metastore.warehouse.dir", "user/hive/warehouse")
 
   implicit val sparkSession: SparkSession =
-    SparkSession.builder().config(conf).getOrCreate()
+    SparkSession
+      .builder()
+      .config(conf)
+      .enableHiveSupport()
+      .getOrCreate()
 
 }

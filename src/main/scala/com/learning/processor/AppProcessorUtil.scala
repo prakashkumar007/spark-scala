@@ -16,8 +16,8 @@ object AppProcessorUtil extends Context with SchemaProcessor {
       .schema(schemaProcessor(tableName))
       .load()
 
-  def validate(data: DataFrame, tableName: String): Boolean = {
-    sparkSession.sql(RawQueries.useSchemaQuery)
+  def validate(data: DataFrame, tableName: String): Unit = {
+    //sparkSession.sql(RawQueries.useSchemaQuery)
     val isContact: Boolean = sparkSession.sqlContext.tableNames
       .contains("contact")
     val maxTimeOfSource =
@@ -25,25 +25,30 @@ object AppProcessorUtil extends Context with SchemaProcessor {
     if (tableName.equals("contact") && isContact) {
       val extractTimeStamp =
         sparkSession.sql(RawQueries.maxTimeQuery).first().getTimestamp(0)
-      addPartitionByColumn(
-        renameAndWriteToSource(
-          data
-            .filter(
-              col("created_at") < maxTimeOfSource && (col("target") > maxTimeOfSource)
-            )
-            .select()
-        )
+      writeToSource(
+        data
+          .filter(
+            col("created_at") < extractTimeStamp && (col("target") > maxTimeOfSource)
+          )
+          .select(),
+        SaveMode.Append
       )
-    } else if (tableName.equals("contact") && !isContact) {} else {}
-    print(data.select(to_utc_timestamp(col("created_at"), "test")).rdd.first())
-    "data.tableName" == "contact"
+
+    } else if (tableName.equals("contact") && !isContact) {
+      writeToSource(
+        data.filter(col("created_at") < maxTimeOfSource).select(),
+        SaveMode.Overwrite
+      )
+    } else {
+      writeToSource(data.select(), SaveMode.Overwrite)
+    }
   }
 
-  def writeToSource(df: DataFrame): Unit = {
+  def writeToSource(df: DataFrame, saveMode: SaveMode): Unit = {
     addPartitionByColumn(renameAndWriteToSource(df))
       .coalesce(10)
       .write
-      .mode(SaveMode.Append)
+      .mode(saveMode)
       .format("hive")
       .insertInto("hello")
   }
@@ -59,7 +64,7 @@ object AppProcessorUtil extends Context with SchemaProcessor {
   }
 
   private def addPartitionByColumn(df: DataFrame): DataFrame = {
-    df.withColumn("created_at", year(col("created_at")))
+    df.withColumn("firstname", year(col("firstname")))
   }
 
   private def renameAndWriteToSource(df: DataFrame) = {

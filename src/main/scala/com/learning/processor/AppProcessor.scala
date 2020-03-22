@@ -4,7 +4,7 @@ import com.learning.Context
 import org.apache.spark.sql.DataFrame
 
 class AppProcessor(readInput: String => DataFrame,
-                   validate: (DataFrame, String) => Boolean)
+                   validate: (DataFrame, String) => Unit)
     extends Context {
 
   def process(tableName: String): Unit = {
