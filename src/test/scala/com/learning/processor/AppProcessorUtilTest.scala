@@ -22,9 +22,8 @@ class AppProcessorUtilTest
 
   protected val appProcessorUtil: AppProcessorUtil = new AppProcessorUtil
 
-  def beforeAll(configMap: Map[String, Any]): DataFrame = {
+  def beforeAll(configMap: Map[String, Any]): DataFrame =
     sqlContext.sql("create table hello as select * from hello")
-  }
 
   it should "Counts based on various ranges" in {
     testCounts
