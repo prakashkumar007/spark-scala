@@ -10,7 +10,7 @@ trait SchemaProcessor {
       StructField("lastname", StringType),
       StructField("state", StringType),
       StructField("age", IntegerType),
-      StructField("created_at", TimestampType)
+      StructField("created_at", TimestampType, nullable = false)
     )
   )
 }

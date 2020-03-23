@@ -4,7 +4,7 @@ import com.learning.processor.{AppProcessor, AppProcessorUtil}
 
 object SparkApp extends Context with App {
 
-  val appProcessorUtil = AppProcessorUtil
+  val appProcessorUtil = new AppProcessorUtil
 
   val appProcessor =
     new AppProcessor(appProcessorUtil.readSource, appProcessorUtil.validate)

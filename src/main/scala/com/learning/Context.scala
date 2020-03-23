@@ -13,6 +13,8 @@ trait Context {
     .set("spark.cassandra.connection.host", appConfig.cassandraConfig.host)
     .set("spark.sql.warehouse.dir", "user/hive/warehouse")
     .set("hive.metastore.warehouse.dir", "user/hive/warehouse")
+    .set("hive.metastore.uris", "thrift://localhost:9083")
+    .set("spark.sql.catalogImplementation", "hive")
 
   implicit val sparkSession: SparkSession =
     SparkSession

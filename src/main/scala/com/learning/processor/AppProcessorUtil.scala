@@ -7,7 +7,7 @@ import org.apache.spark.sql.{DataFrame, SaveMode}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.StructType
 
-object AppProcessorUtil extends Context with SchemaProcessor {
+class AppProcessorUtil extends Context with SchemaProcessor {
 
   def readSource(tableName: String): DataFrame =
     sparkSession.read
@@ -20,8 +20,9 @@ object AppProcessorUtil extends Context with SchemaProcessor {
     //sparkSession.sql(RawQueries.useSchemaQuery)
     val isContact: Boolean = sparkSession.sqlContext.tableNames
       .contains("contact")
-    val maxTimeOfSource =
+    val maxTimeOfSource = {
       data.select(max(col("created_at"))).rdd.first().getTimestamp(0)
+    }
     if (tableName.equals("contact") && isContact) {
       val extractTimeStamp =
         sparkSession.sql(RawQueries.maxTimeQuery).first().getTimestamp(0)
@@ -30,27 +31,30 @@ object AppProcessorUtil extends Context with SchemaProcessor {
           .filter(
             col("created_at") < extractTimeStamp && (col("target") > maxTimeOfSource)
           )
-          .select(),
+          .select("firstname", "lastname", "state", "age", "created_at"),
         SaveMode.Append
       )
 
     } else if (tableName.equals("contact") && !isContact) {
       writeToSource(
-        data.filter(col("created_at") < maxTimeOfSource).select(),
+        data
+          .filter(col("created_at") < maxTimeOfSource)
+          .select("firstname", "lastname", "state", "age", "created_at"),
         SaveMode.Overwrite
       )
     } else {
-      writeToSource(data.select(), SaveMode.Overwrite)
+      writeToSource(
+        data.select("firstname", "lastname", "state", "age", "created_at"),
+        SaveMode.Overwrite
+      )
     }
   }
 
   def writeToSource(df: DataFrame, saveMode: SaveMode): Unit = {
-    addPartitionByColumn(renameAndWriteToSource(df))
-      .coalesce(10)
-      .write
+    addPartitionByColumn(renameAndWriteToSource(df)).write
       .mode(saveMode)
       .format("hive")
-      .insertInto("hello")
+      .saveAsTable("hello")
   }
 
   private def schemaProcessor(str: String): StructType = {
@@ -64,10 +68,16 @@ object AppProcessorUtil extends Context with SchemaProcessor {
   }
 
   private def addPartitionByColumn(df: DataFrame): DataFrame = {
-    df.withColumn("firstname", year(col("firstname")))
+    df.withColumn("year", year(col("created_at").cast("timestamp")))
+
   }
 
   private def renameAndWriteToSource(df: DataFrame) = {
-    df.withColumn("firstname", lit("first_name"))
+    df.withColumnRenamed("firstname", "first_name")
+      .withColumnRenamed("lastname", "last_name")
+      .withColumnRenamed("state", "state")
+      .withColumnRenamed("age", "age")
+      .withColumnRenamed("created_at", "created_at")
+
   }
 }

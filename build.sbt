@@ -8,7 +8,7 @@ lazy val root = (project in file("."))
   .enablePlugins(SparkPlugin)
   .settings(
     name := "spark-poc",
-    libraryDependencies ++= backendDependencies,
+    libraryDependencies ++= backendDependencies ++ testDependencies,
     scalacOptions := List(
       "-encoding",
       "utf8",
