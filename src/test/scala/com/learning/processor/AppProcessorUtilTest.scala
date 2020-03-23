@@ -26,9 +26,9 @@ class AppProcessorUtilTest
     sqlContext.sql("create table hello as select * from hello")
   }
 
-  /*it should "Counts based on various ranges" in {
+  it should "Counts based on various ranges" in {
     testCounts
-  }*/
+  }
 
   private def testCounts = {
     spark.sql(
