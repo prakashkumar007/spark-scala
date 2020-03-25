@@ -7,7 +7,7 @@ import org.apache.spark.sql.{DataFrame, SaveMode}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.StructType
 
-class AppProcessorUtil extends Context with SchemaProcessor {
+class AppUtility extends Context with SchemaProcessor {
 
   def readSource(tableName: String): DataFrame =
     sparkSession.read
@@ -17,7 +17,6 @@ class AppProcessorUtil extends Context with SchemaProcessor {
       .load()
 
   def validate(data: DataFrame, tableName: String): Unit = {
-    //sparkSession.sql(RawQueries.useSchemaQuery)
     val isContact: Boolean = sparkSession.sqlContext.tableNames
       .contains("contact")
     val maxTimeOfSource = {

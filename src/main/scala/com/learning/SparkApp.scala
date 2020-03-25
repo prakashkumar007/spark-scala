@@ -1,14 +1,14 @@
 package com.learning
 
-import com.learning.processor.{AppProcessor, AppProcessorUtil}
+import com.learning.processor.{AppProcessor, ProcessRequest}
 
 object SparkApp extends Context with App {
 
-  val appProcessorUtil = new AppProcessorUtil
+  val appProcessorUtil = new ProcessRequest
 
   val appProcessor =
     new AppProcessor(appProcessorUtil.readSource, appProcessorUtil.validate)
 
-  appProcessor.process(args(0))
+  appProcessor.process()
 
 }

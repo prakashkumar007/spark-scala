@@ -20,7 +20,7 @@ class AppProcessorUtilTest
 
   override implicit def reuseContextIfPossible: Boolean = true
 
-  protected val appProcessorUtil: AppProcessorUtil = new AppProcessorUtil
+  protected val appProcessorUtil: AppUtility = new AppUtility
 
   def beforeAll(configMap: Map[String, Any]): DataFrame =
     sqlContext.sql("create table hello as select * from hello")
